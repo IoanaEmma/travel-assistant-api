@@ -1,4 +1,6 @@
 export type FlightsApiResponse = {
+    origin: string;
+    destination: string;
     itineraries: any[];
     legs: any[];
     segments: any[];

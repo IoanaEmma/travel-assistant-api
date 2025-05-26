@@ -1,7 +1,7 @@
 import { FlightItinerary, FlightsApiResponse } from "../types/flights";
 
 function parseFlightData(flightData: FlightsApiResponse): FlightItinerary[] {
-    const { itineraries, legs, segments, carriers, places } = flightData;
+    const { origin, destination, itineraries, legs, segments, carriers, places } = flightData;
     
     const carrierMap = new Map(carriers.map(c => [c.id, c.name]));
     const placeMap = new Map(places.map(p => [p.id, p.display_code]));
@@ -39,6 +39,8 @@ function parseFlightData(flightData: FlightsApiResponse): FlightItinerary[] {
         };
 
         return {
+            origin,
+            destination,
             totalPrice,
             bookingUrl,
             departureFlight: formatLeg(departureLegId),
