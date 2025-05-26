@@ -34,7 +34,7 @@ async function chat(req: Request, res: Response, next: NextFunction) {
 
     } catch (error) {
         next(error);
-        res.json({ error });
+        res.status(500).json({ error });
     }
 }
 
