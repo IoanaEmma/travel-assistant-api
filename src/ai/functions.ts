@@ -1,6 +1,8 @@
+import { LLM_FUNCTIONS } from "../utils/constants"
+
 export const functions = [
     {
-        name: "search_flights",
+        name: LLM_FUNCTIONS.SEARCH_FLIGHTS,
         description: "Search for flights between two cities on specific dates",
         parameters: {
             type: "object",
@@ -13,6 +15,19 @@ export const functions = [
                 cabinClass: { type: "string" }
             },
             required: ["origin", "destination", "departureDate"]
+        }
+    },
+    {
+        name: LLM_FUNCTIONS.SEARCH_HOTELS,
+        description: "Search for hotels in a specific city on specific dates",
+        parameters: {
+            type: "object",
+            properties: {
+                city: { type: "string" },
+                checkInDate: { type: "string" },
+                checkOutDate: { type: "string" },
+            },
+            required: ["city", "checkInDate", "checkOutDate"]
         }
     }
 ]

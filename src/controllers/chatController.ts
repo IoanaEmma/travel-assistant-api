@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { searchFlights } from '../services/flightService';
-import parser from "../utils/parser";
-import { sortItinerariesByStops } from '../utils/helper';
+import { searchHotels } from '../services/hotelService';
 import { callModel } from '../ai/model';
 import { ChatResponse } from '../types/chat';
+import { LLM_FUNCTIONS } from '../utils/constants';
 
 async function chat(req: Request, res: Response, next: NextFunction) {
     try {
@@ -12,18 +12,30 @@ async function chat(req: Request, res: Response, next: NextFunction) {
         let apiResponse: ChatResponse = {} as ChatResponse;
 
         const toolCall = response.choices[0].message.tool_calls?.[0];
-        if (toolCall?.function?.name === "search_flights") {
+        if (toolCall?.function?.name === LLM_FUNCTIONS.SEARCH_FLIGHTS) {
             const args = JSON.parse(toolCall.function.arguments);
             const flights = await searchFlights(args);
-            const parsedFlights = parser.parseFlightData(flights);
-            const sortedFlights = sortItinerariesByStops(parsedFlights);
+
             apiResponse = {
                 response: {
-                    flights: sortedFlights,
+                    flights: flights,
                 },
                 tab: "flights",
             };
-        } else {
+        }
+        else if (toolCall?.function?.name === LLM_FUNCTIONS.SEARCH_HOTELS) {
+            const args = JSON.parse(toolCall.function.arguments);
+            const hotels = await searchHotels(args.city, args.checkInDate, args.checkOutDate);
+
+            apiResponse = {
+                response: {
+                    hotels: hotels,
+                },
+                tab: "hotels",
+            };
+        }
+
+        else {
             apiResponse = {
                 response: response.choices[0].message.content,
                 tab: "home",
@@ -34,7 +46,7 @@ async function chat(req: Request, res: Response, next: NextFunction) {
 
     } catch (error) {
         next(error);
-        res.status(500).json({ error });
+        res.status(500).json('Internal server error');
     }
 }
 
