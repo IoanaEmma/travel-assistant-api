@@ -5,4 +5,6 @@ export default {
     FLIGHT_API: process.env.FLIGHT_API || "",
     HOTELS_API: process.env.HOTELS_API || "",
     HOTELS_API_KEY: process.env.HOTELS_API_KEY || "",
+    ATTRACTIONS_API: process.env.ATTRACTIONS_API || "",
+    ATTRACTIONS_API_KEY: process.env.ATTRACTIONS_API_KEY || "",
 }
