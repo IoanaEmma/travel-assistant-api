@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { searchFlights } from '../services/flightService';
 import { searchHotels } from '../services/hotelService';
+import { searchAttractions } from '../services/attractionService';
 import { callModel } from '../ai/model';
 import { ChatResponse } from '../types/chat';
 import { LLM_FUNCTIONS } from '../utils/constants';
@@ -34,7 +35,17 @@ async function chat(req: Request, res: Response, next: NextFunction) {
                 tab: "hotels",
             };
         }
+        else if (toolCall?.function?.name === LLM_FUNCTIONS.SEARCH_ATTRACTIONS) {
+            const args = JSON.parse(toolCall.function.arguments);
+            const attractions = await searchAttractions(args.city);
 
+            apiResponse = {
+                response: {
+                    attractions: attractions,
+                },
+                tab: "attractions",
+            };
+        }
         else {
             apiResponse = {
                 response: response.choices[0].message.content,

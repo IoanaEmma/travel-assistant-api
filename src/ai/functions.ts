@@ -29,5 +29,16 @@ export const functions = [
             },
             required: ["city", "checkInDate", "checkOutDate"]
         }
+    },
+    {
+        name: LLM_FUNCTIONS.SEARCH_ATTRACTIONS,
+        description: "Search for attractions in a specific city",
+        parameters: {
+            type: "object",
+            properties: {
+                city: { type: "string" }
+            },
+            required: ["city"]
+        }
     }
 ]

@@ -3,7 +3,8 @@ export const SYSTEM_PROMPT = "You are a helpful travel assistant that can use fu
 export const MODEL_NAME = "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo";
 export const LLM_FUNCTIONS = {
     SEARCH_FLIGHTS: "search_flights",
-    SEARCH_HOTELS: "search_hotels"
+    SEARCH_HOTELS: "search_hotels",
+    SEARCH_ATTRACTIONS: "search_attractions"
 }
 
 export const LOCATION_KEYS = {
