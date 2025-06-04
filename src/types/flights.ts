@@ -15,7 +15,7 @@ type SegmentInfo = {
     departureTime: string;
     arrivalAirport: string;
     arrivalTime: string;
-    durationMinutes: number;
+    duration: number;
 };
 
 export type FlightItinerary = {
@@ -33,4 +33,9 @@ export type FlightItinerary = {
 
 export type FlightsApi = {
     flights: FlightItinerary[];
+}
+
+export type Flight = FlightItinerary & {
+    origin: string;
+    destination: string;
 }
