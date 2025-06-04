@@ -14,7 +14,7 @@ export type Hotel = {
     city?: string;
 }
 
-type Rate = {
+export type Rate = {
     name: string;
     ratePerNight: number;
     tax: number;
