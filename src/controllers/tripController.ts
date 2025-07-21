@@ -107,9 +107,26 @@ async function getTripDetails(req: Request, res: Response, next: NextFunction) {
     }
 }
 
+async function updateTrip(req: Request, res: Response, next: NextFunction) {
+
+    const { tripId } = req.params;
+    console.log("Updating trip with ID:", tripId);
+    const tripRepo = AppDataSource.getRepository(Trip);
+
+    let trip = await tripRepo.findOneBy({ id: Number(tripId) });
+    if (!trip) return res.status(404).json({ message: "Trip not found" });
+
+    trip.name = req.body.name;
+    trip.status = req.body.status;
+    await tripRepo.save(trip);
+
+    res.json(trip);
+}
+
 export default {
     createTrip,
     addItemToTrip,
     getTrips,
-    getTripDetails
+    getTripDetails,
+    updateTrip
 }

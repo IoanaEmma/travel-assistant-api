@@ -18,4 +18,8 @@ router.get('/:userId/:tripId', (req, res, next) => {
     Promise.resolve(tripController.getTripDetails(req, res, next)).catch(next);
 });
 
+router.put('/update/:tripId', (req, res, next) => {
+    Promise.resolve(tripController.updateTrip(req, res, next)).catch(next);
+});
+
 export default router;

@@ -10,4 +10,6 @@ export type Trip = {
     id: number;
     userId: number;
     name: string;
+    when: string;
+    status: string;
 }

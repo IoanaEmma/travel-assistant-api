@@ -14,6 +14,12 @@ export class Trip {
     @Column()
     name: string;
 
+    @Column()
+    when: string;
+    
+    @Column({ type: "varchar", default: "active" })
+    status: "active" | "completed" | "canceled";
+
     @ManyToOne(() => Hotel, { nullable: true, onDelete: 'SET NULL' })
     hotel: Hotel;
 
