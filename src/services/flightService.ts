@@ -3,6 +3,7 @@ import config from "../config"
 import { FlightItinerary } from "../types/flights";
 import parser from "../utils/parser";
 import { sortItinerariesByStops } from "../utils/helper";
+import { AIRPORT_KEYS } from "../utils/constants";
 
 export async function searchFlights({
     origin,
@@ -24,7 +25,9 @@ export async function searchFlights({
         with ${passengers} passengers in ${cabinClass} class.`);
 
     try {
-        const url = `${config.FLIGHT_API}/roundtrip/${config.FLIGHT_API_KEY}/${origin}/${destination}/${departureDate}/${returnDate}/${passengers}/0/0/${cabinClass}/EUR`;
+        const departureAirport = AIRPORT_KEYS[origin.toUpperCase()] || origin;
+        const arrivalAirport = AIRPORT_KEYS[destination.toUpperCase()] || destination;
+        const url = `${config.FLIGHT_API}/roundtrip/${config.FLIGHT_API_KEY}/${departureAirport}/${arrivalAirport}/${departureDate}/${returnDate}/${passengers}/0/0/${cabinClass}/USD`;
         console.log(`Fetching flights from URL: ${url}`);
         const response = await axios.get(url);
         const parsedFlights = parser.parseFlightData({

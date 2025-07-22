@@ -20,3 +20,10 @@ export const LOCATION_KEYS = {
     ROME: "g187791",
     AMSTERDAM: "g188590"
 }
+
+export const AIRPORT_KEYS = {
+    ROME: "CIA",
+    BUCHAREST: "OTP",
+    PARIS: "CDG",
+    AMSTERDAM: "AMS",
+}
