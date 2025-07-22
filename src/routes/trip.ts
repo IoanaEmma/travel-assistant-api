@@ -6,7 +6,7 @@ router.post('/', (req, res, next) => {
     Promise.resolve(tripController.createTrip(req, res, next)).catch(next);
 });
 
-router.put('/:tripId', (req, res, next) => {
+router.put('/add-item/:tripId', (req, res, next) => {
     Promise.resolve(tripController.addItemToTrip(req, res, next)).catch(next);
 });
 
