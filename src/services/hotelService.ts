@@ -26,7 +26,7 @@ export async function searchHotels(city: string, checkInDate: string, checkOutDa
 }
 
 export async function getHotel(key: string, checkInDate: string, checkOutDate: string): Promise<HotelDetails> {
-    const url = `${config.HOTELS_API}/rates?hotel_key=${key}&chk_in=${checkInDate}&chk_out=${checkOutDate}`;
+    const url = `${config.HOTELS_API}/rates?hotel_key=${key}&chk_in=${checkInDate}&chk_out=${checkOutDate}&currency=EUR`;
 
     try {
         const response = await axios.get(url);

@@ -24,7 +24,8 @@ export async function searchFlights({
         with ${passengers} passengers in ${cabinClass} class.`);
 
     try {
-        const url = `${config.FLIGHT_API}/roundtrip/${config.FLIGHT_API_KEY}/${origin}/${destination}/${departureDate}/${returnDate}/${passengers}/0/0/${cabinClass}`;
+        const url = `${config.FLIGHT_API}/roundtrip/${config.FLIGHT_API_KEY}/${origin}/${destination}/${departureDate}/${returnDate}/${passengers}/0/0/${cabinClass}/EUR`;
+        console.log(`Fetching flights from URL: ${url}`);
         const response = await axios.get(url);
         const parsedFlights = parser.parseFlightData({
             origin,
