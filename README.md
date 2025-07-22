@@ -42,11 +42,17 @@ A Node.js/TypeScript backend API for a travel planning application that helps us
    DB_PASSWORD=your_db_password
    DB_NAME=travel_assistant
 
-   # API Keys
-   TOGETHER_API_KEY=your_together_ai_api_key
+   # EXTERNAL APIS
+   TOGETHER_API=https://together-ai-api-url
    HOTELS_API=https://hotels-api-url
    FLIGHTS_API=https://flights-api-url
    ATTRACTIONS_API=https://attractions-api-url
+
+   # API Keys
+   TOGETHER_API_KEY=your_together_ai_api_key
+   HOTELS_API_KEY=your_hotels_api_key
+   FLIGHT_API_KEY=your_flights_api_key
+   ATTRACTIONS_API_KEY=your_attractions_api_key
    ```
 
 4. **Start the server**
@@ -83,7 +89,6 @@ The API will be available at `http://localhost:3000`
 ```bash
 POST /chat
 Content-Type: application/json
-
 Description: This endpoint can return flights, hotels, attractions or normal model response 
 
 {
