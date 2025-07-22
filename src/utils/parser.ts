@@ -30,7 +30,7 @@ function parseFlightData(flightData: FlightsApiResponse): FlightItinerary[] {
                     departureTime: segment.departure,
                     arrivalAirport: placeMap.get(segment.destination_place_id) || "Unknown",
                     arrivalTime: segment.arrival,
-                    durationMinutes: segment.duration
+                    duration: segment.duration
                 };
             });
 
