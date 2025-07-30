@@ -22,4 +22,8 @@ router.put('/update/:tripId', (req, res, next) => {
     Promise.resolve(tripController.updateTrip(req, res, next)).catch(next);
 });
 
+router.delete('/:tripId', (req, res, next) => {
+    Promise.resolve(tripController.deleteTrip(req, res, next)).catch(next);
+});
+
 export default router;

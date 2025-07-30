@@ -118,9 +118,21 @@ async function updateTrip(req: Request, res: Response, next: NextFunction) {
 
     trip.name = req.body.name;
     trip.status = req.body.status;
+    trip.when = req.body.when;
     await tripRepo.save(trip);
 
     res.json(trip);
+}
+
+async function deleteTrip(req: Request, res: Response, next: NextFunction) {
+    const { tripId } = req.params;
+    const tripRepo = AppDataSource.getRepository(Trip);
+
+    const trip = await tripRepo.findOneBy({ id: Number(tripId) });
+    if (!trip) return res.status(404).json({ message: "Trip not found" });
+
+    await tripRepo.remove(trip);
+    res.status(204).send();
 }
 
 export default {
@@ -128,5 +140,6 @@ export default {
     addItemToTrip,
     getTrips,
     getTripDetails,
-    updateTrip
+    updateTrip,
+    deleteTrip
 }
