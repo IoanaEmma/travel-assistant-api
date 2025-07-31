@@ -26,4 +26,5 @@ export const AIRPORT_KEYS = {
     BUCHAREST: "OTP",
     PARIS: "CDG",
     AMSTERDAM: "AMS",
+    LONDON: "LHR",
 }
