@@ -27,7 +27,7 @@ export async function searchFlights({
     try {
         const departureAirport = AIRPORT_KEYS[origin.toUpperCase()] || origin;
         const arrivalAirport = AIRPORT_KEYS[destination.toUpperCase()] || destination;
-        const url = `${config.FLIGHT_API}/roundtrip/${config.FLIGHT_API_KEY}/${departureAirport}/${arrivalAirport}/${departureDate}/${returnDate}/${passengers}/0/0/${cabinClass}/USD`;
+        const url = `${config.FLIGHT_API}/roundtrip/${config.FLIGHT_API_KEY}/${departureAirport}/${arrivalAirport}/${departureDate}/${returnDate}/${passengers}/0/0/${cabinClass}/EUR`;
         console.log(`Fetching flights from URL: ${url}`);
         const response = await axios.get(url);
         const parsedFlights = parser.parseFlightData({
