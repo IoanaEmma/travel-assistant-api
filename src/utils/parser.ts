@@ -13,7 +13,7 @@ function parseFlightData(flightData: FlightsApiResponse): FlightItinerary[] {
     return itineraries.map(itinerary => {
         const pricing = itinerary.pricing_options[0];
         const bookingUrl = pricing.items[0].url;
-        const totalPrice = `${pricing.price.amount.toFixed(2)} USD`;
+        const totalPrice = `${pricing.price.amount.toFixed(2)} EUR`;
 
         const [departureLegId, returnLegId] = itinerary.leg_ids;
 
