@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { searchFlights } from '../services/flightService';
-import { searchHotels } from '../services/hotelService';
-import { searchAttractions } from '../services/attractionService';
+import { searchFlights } from '../services/flight.service';
+import { searchHotels } from '../services/hotel.service';
+import { searchAttractions } from '../services/attraction.service';
 import { callModel } from '../ai/model';
 import { ChatResponse } from '../types/chat';
 import { LLM_FUNCTIONS } from '../utils/constants';

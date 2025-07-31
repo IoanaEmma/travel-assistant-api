@@ -135,11 +135,65 @@ async function deleteTrip(req: Request, res: Response, next: NextFunction) {
     res.status(204).send();
 }
 
+async function removeItemFromTrip(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { tripId } = req.params;
+        const { type, itemId } = req.body;
+
+        const tripRepo = AppDataSource.getRepository(Trip);
+        const trip = await tripRepo.findOne({
+            where: { id: Number(tripId) },
+            relations: [
+                "hotel",
+                "hotel.rates",
+                "flight",
+                "flight.departureFlight",
+                "flight.departureFlight.segments",
+                "flight.returnFlight",
+                "flight.returnFlight.segments",
+                "attractions"
+            ]
+        });
+
+        if (!trip) {
+            return res.status(404).json({ message: "Trip not found" });
+        }
+
+        if (type === "hotel") {
+            if (trip.hotel && trip.hotel.id === itemId) {
+                trip.hotel = null;
+            } else {
+                return res.status(404).json({ message: "Hotel not found in this trip" });
+            }
+        } else if (type === "flight") {
+            if (trip.flight && trip.flight.id === itemId) {
+                trip.flight = null;
+            } else {
+                return res.status(404).json({ message: "Flight not found in this trip" });
+            }
+        } else if (type === "attraction") {
+            const attractionIndex = trip.attractions?.findIndex(attraction => attraction.id === itemId);
+            if (attractionIndex !== undefined && attractionIndex >= 0) {
+                trip.attractions = trip.attractions.filter(attraction => attraction.id !== itemId);
+            } else {
+                return res.status(404).json({ message: "Attraction not found in this trip" });
+            }
+        } else {
+            return res.status(400).json({ message: "Invalid type" });
+        }
+
+        const savedTrip = await tripRepo.save(trip);
+        res.json(savedTrip);
+    } catch (error) {
+        next(error);
+    }
+}
 export default {
     createTrip,
     addItemToTrip,
     getTrips,
     getTripDetails,
+    removeItemFromTrip,
     updateTrip,
     deleteTrip
 }

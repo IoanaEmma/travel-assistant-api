@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { getHotel } from '../services/hotelService';
+import { getHotel } from '../services/hotel.service';
 import { AppDataSource } from '../dataSource';
 import { Hotel } from '../entities/Hotel';
 import { HotelRate } from '../entities/HotelRate';
