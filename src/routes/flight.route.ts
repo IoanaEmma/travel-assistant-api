@@ -1,5 +1,5 @@
 import express from 'express';
-import flightController from '../controllers/flightController';
+import flightController from '../controllers/flight.controller';
 
 const router = express.Router({ mergeParams: true });
 router.post('/', (req, res, next) => {

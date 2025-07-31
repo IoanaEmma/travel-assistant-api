@@ -1,5 +1,5 @@
 import express from 'express';
-import hotelController from '../controllers/hotelController';
+import hotelController from '../controllers/hotel.controller';
 
 
 const router = express.Router({ mergeParams: true });

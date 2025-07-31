@@ -1,5 +1,5 @@
 import express from 'express';
-import tripController from '../controllers/tripController';
+import tripController from '../controllers/trip.controller';
 
 const router = express.Router({ mergeParams: true });
 router.post('/', (req, res, next) => {
@@ -24,6 +24,10 @@ router.put('/update/:tripId', (req, res, next) => {
 
 router.delete('/:tripId', (req, res, next) => {
     Promise.resolve(tripController.deleteTrip(req, res, next)).catch(next);
+});
+
+router.delete('/remove-item/:tripId', (req, res, next) => {
+    Promise.resolve(tripController.removeItemFromTrip(req, res, next)).catch(next);
 });
 
 export default router;

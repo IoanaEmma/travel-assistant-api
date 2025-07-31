@@ -2,11 +2,11 @@ import express from 'express';
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
-import chatRouter from "./src/routes/chat";
-import hotelRouter from "./src/routes/hotel";
-import tripRouter from "./src/routes/trip";
-import flightRouter from "./src/routes/flight";
-import attractionRouter from "./src/routes/attraction";
+import chatRouter from "./src/routes/chat.route";
+import hotelRouter from "./src/routes/hotel.route";
+import tripRouter from "./src/routes/trip.route";
+import flightRouter from "./src/routes/flight.route";
+import attractionRouter from "./src/routes/attraction.route";
 import { AppDataSource } from "./src/dataSource";
 
 AppDataSource.initialize().then(() => {
