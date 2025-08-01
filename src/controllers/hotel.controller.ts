@@ -59,7 +59,79 @@ async function createHotel(req: Request, res: Response, next: NextFunction) {
     }
 }
 
+async function getHotelsCities(req: Request, res: Response, next: NextFunction) {
+    try {
+        const hotelRepo = AppDataSource.getRepository(Hotel);
+        const hotels = await hotelRepo.find();
+        const cities = Array.from(new Set(hotels.map(hotel => hotel.city)));
+        res.status(200).json(cities);
+    }
+    catch (error) {
+        next(error);
+        res.status(500).json('Internal server error');
+    }
+}
+
+async function getHotelsByCity(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { city } = req.query;
+        const hotelRepo = AppDataSource.getRepository(Hotel);
+        let hotels: Hotel[];
+        if (city) {
+            hotels = await hotelRepo.find({
+                where: { city: city as string },
+                relations: ["rates"] // Include hotel rates
+            });
+        } else {
+            hotels = await hotelRepo.find({
+                relations: ["rates"] // Include hotel rates
+            });
+        }
+
+        // Add price property with min and max from rates
+        const hotelsWithPrice = hotels.map(hotel => {
+            const rates = hotel.rates || [];
+            const prices = rates.map(rate => rate.ratePerNight);
+
+            const price = {
+                min: prices.length > 0 ? Math.min(...prices) : 0,
+                max: prices.length > 0 ? Math.max(...prices) : 0
+            };
+
+            delete hotel.rates; // Remove rates from the hotel object to avoid circular reference
+
+            return {
+                ...hotel,
+                price
+            };
+        });
+
+        res.json(hotelsWithPrice);
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function deleteHotel(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { id } = req.params;
+        const hotelRepo = AppDataSource.getRepository(Hotel);
+        const hotel = await hotelRepo.findOneBy({ id: parseInt(id) });
+        if (!hotel) {
+            return res.status(404).json({ message: "Hotel not found" });
+        }
+        await hotelRepo.remove(hotel);
+        res.status(204).send();
+    } catch (error) {
+        next(error);
+        res.status(500).json('Internal server error');
+    }
+}
+
 export default {
     getHotelDetails,
-    createHotel
+    createHotel,
+    getHotelsCities,
+    getHotelsByCity,
+    deleteHotel
 }
