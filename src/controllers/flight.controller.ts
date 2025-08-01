@@ -44,6 +44,66 @@ async function createFlight(req: Request, res: Response, next: NextFunction) {
     }
 }
 
+async function getFlightCities(req: Request, res: Response, next: NextFunction) {
+    try {
+        const flightRepo = AppDataSource.getRepository(Flight);
+        const flights = await flightRepo.find();
+        const cities = Array.from(new Set(flights.map(flight => flight.destination)));
+        res.status(200).json(cities);
+    } catch (error) {
+        next(error);
+        res.status(500).json('Internal server error');
+    }
+}
+
+async function getFlightsByCity(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { city } = req.query;
+        const flightRepo = AppDataSource.getRepository(Flight);
+        let flights: Flight[];
+        if (city) {
+            flights = await flightRepo.find({
+                where: { destination: city as string },
+                relations: [
+                    "departureFlight",
+                    "departureFlight.segments",
+                    "returnFlight",
+                    "returnFlight.segments"
+                ]
+            });
+        } else {
+            flights = await flightRepo.find({
+                relations: [
+                    "departureFlight",
+                    "departureFlight.segments",
+                    "returnFlight",
+                    "returnFlight.segments"
+                ]
+            });
+        }
+        res.json(flights);
+    } catch (error) {
+        next(error);
+    }
+}
+async function deleteFlight(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { id } = req.params;
+        const flightRepo = AppDataSource.getRepository(Flight);
+        const flight = await flightRepo.findOneBy({ id: parseInt(id) });
+        if (!flight) {
+            return res.status(404).json({ message: "Flight not found" });
+        }
+        await flightRepo.remove(flight);
+        res.status(204).send();
+    } catch (error) {
+        next(error);
+    }
+}
+
 export default {
-    createFlight
+    createFlight,
+    getFlightCities,
+    getFlightsByCity,
+    deleteFlight
 }
