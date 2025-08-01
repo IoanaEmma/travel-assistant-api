@@ -48,7 +48,7 @@ async function chat(req: Request, res: Response, next: NextFunction) {
         }
         else {
             apiResponse = {
-                response: response.choices[0].message.content,
+                response: "I'm not really in the mood to talk about that. Let's focus on travel plans.",
                 tab: "home",
             }
         }
