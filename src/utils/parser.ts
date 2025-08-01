@@ -73,6 +73,7 @@ function praseHotelData(hotelsList: any, checkInDate: string, checkOutDate: stri
 function parseAttractionData(attractionsList: any): Attraction[] {
     return attractionsList.map((attraction: any) => ({
         name: attraction.properties.name,
+        city: attraction.properties.city || "",
         address: attraction.properties.address_line2 || "No address provided",
         website: attraction.properties.website || "No website provided",
         openingHours: attraction.properties.opening_hours || "No opening hours provided"

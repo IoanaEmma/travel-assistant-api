@@ -8,6 +8,9 @@ export class Attraction {
     @Column()
     name: string;
 
+    @Column()
+    city: string;
+
     @Column({ nullable: true })
     address: string;
 
