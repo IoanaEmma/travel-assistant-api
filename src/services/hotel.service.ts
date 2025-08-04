@@ -26,11 +26,31 @@ export async function searchHotels(city: string, checkInDate: string, checkOutDa
 }
 
 export async function getHotel(key: string, checkInDate: string, checkOutDate: string): Promise<HotelDetails> {
-    const url = `${config.HOTELS_API}/rates?hotel_key=${key}&chk_in=${checkInDate}&chk_out=${checkOutDate}&currency=EUR`;
+    // Handle past dates
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkOutDate);
+
+    let adjustedCheckInDate = checkInDate;
+    let adjustedCheckOutDate = checkOutDate;
+
+    if (checkIn < today) {
+        const daysDifference = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
+        adjustedCheckInDate = today.toISOString().split('T')[0];
+
+        const newCheckOut = new Date(today);
+        newCheckOut.setDate(newCheckOut.getDate() + daysDifference);
+        adjustedCheckOutDate = newCheckOut.toISOString().split('T')[0];
+    }
+
+    const url = `${config.HOTELS_API}/rates?hotel_key=${key}&chk_in=${adjustedCheckInDate}&chk_out=${adjustedCheckOutDate}&currency=EUR`;
+
+    console.log(url)
     try {
         const response = await axios.get(url);
-        
+
         const hotelDetails = response.data.result;
 
         const rates = hotelDetails.rates.map((rate: any) => ({
