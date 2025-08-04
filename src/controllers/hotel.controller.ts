@@ -16,7 +16,6 @@ async function getHotelDetails(req: Request, res: Response, next: NextFunction) 
         );
         return res.json(hotelDetails);
     } catch (error) {
-        next(error);
         res.status(500).json('Internal server error');
     }
 }
