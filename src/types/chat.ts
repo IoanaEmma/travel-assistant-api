@@ -7,5 +7,6 @@ type AppTab = "home" | "flights" | "trips" | "hotels" | "attractions" | "weather
 export type ChatResponse = {
     response: FlightsApi | HotelsApi | AttractionsApi | string;
     tab: AppTab;
+    conversationHistory?: Array<{ role: string, content: string }>;
 }
 

@@ -4,15 +4,24 @@ import { searchHotels } from '../services/hotel.service';
 import { searchAttractions } from '../services/attraction.service';
 import { callModel } from '../ai/model';
 import { ChatResponse } from '../types/chat';
-import { LLM_FUNCTIONS } from '../utils/constants';
+import { LLM_FUNCTIONS, SYSTEM_PROMPT } from '../utils/constants';
+
 
 async function chat(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userMessage } = req.body;
-        const response = await callModel(userMessage);
+        const { userMessage, conversationHistory = [] } = req.body;
+
+        const messages = [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...conversationHistory,
+            { role: "user", content: userMessage }
+        ];
+
+        const response = await callModel(messages);
         let apiResponse: ChatResponse = {} as ChatResponse;
 
         const toolCall = response.choices[0].message.tool_calls?.[0];
+
         if (toolCall?.function?.name === LLM_FUNCTIONS.SEARCH_FLIGHTS) {
             const args = JSON.parse(toolCall.function.arguments);
             const flights = await searchFlights(args);
@@ -48,12 +57,21 @@ async function chat(req: Request, res: Response, next: NextFunction) {
         }
         else {
             apiResponse = {
-                response: "I'm not really in the mood to talk about that. Let's focus on travel plans.",
+                response: response.choices[0].message.content,
                 tab: "home",
             }
         }
 
-        return res.json(apiResponse);
+        const updatedHistory = [
+            ...conversationHistory,
+            { role: "user", content: userMessage },
+            { role: "assistant", content: typeof apiResponse.response === 'string' ? apiResponse.response : `I found ${Object.keys(apiResponse.response)[0]} for you.` }
+        ];
+
+        return res.json({
+            ...apiResponse,
+            conversationHistory: updatedHistory
+        });
 
     } catch (error) {
         next(error);

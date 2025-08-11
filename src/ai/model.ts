@@ -1,17 +1,13 @@
 import axios from "axios";
 import config from "../config";
 import { functions } from "./functions";
-import { SYSTEM_PROMPT, TOOL_CHECK_PROMPT, MODEL_NAME } from "../utils/constants";
+import { TOOL_CHECK_PROMPT, MODEL_NAME } from "../utils/constants";
 
-export async function callModel(userMessage: string) {
+export async function callModel(messages: Array<{role: string, content: string}>) {
+    const latestUserMessage = messages[messages.length - 1].content;
     const toolCheckMessages = [
         { role: "system", content: TOOL_CHECK_PROMPT },
-        { role: "user", content: userMessage }
-    ];
-
-    const modelMessages = [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: userMessage }
+        { role: "user", content: latestUserMessage }
     ];
 
     const headers = {
@@ -33,7 +29,7 @@ export async function callModel(userMessage: string) {
 
     const payload: any = {
         model: MODEL_NAME,
-        messages: modelMessages
+        messages: messages
     };
 
     if (shouldUseTools) {
@@ -49,5 +45,3 @@ export async function callModel(userMessage: string) {
 
     return response.data;
 }
-
-//prompt: I need a flight from Bucharest to Rome from 22 may until 26 may for 2 adults on economy class 
