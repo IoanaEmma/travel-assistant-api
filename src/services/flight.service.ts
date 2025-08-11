@@ -10,8 +10,8 @@ export async function searchFlights({
     destination,
     departureDate,
     returnDate,
-    passengers,
-    cabinClass
+    passengers = 1,
+    cabinClass = "Economy"
 }: {
     origin: string;
     destination: string;
@@ -21,13 +21,16 @@ export async function searchFlights({
     cabinClass: string;
 }): Promise<FlightItinerary[]> {
 
+    const finalCabinClass = cabinClass || "Economy";
+    const finalPassengers = passengers || 1;
+    
     console.log(`Searching flights from ${origin} to ${destination} on ${departureDate} 
-        with ${passengers} passengers in ${cabinClass} class.`);
+        with ${finalPassengers} passengers in ${finalCabinClass} class.`);
 
     try {
         const departureAirport = AIRPORT_KEYS[origin.toUpperCase()] || origin;
         const arrivalAirport = AIRPORT_KEYS[destination.toUpperCase()] || destination;
-        const url = `${config.FLIGHT_API}/roundtrip/${config.FLIGHT_API_KEY}/${departureAirport}/${arrivalAirport}/${departureDate}/${returnDate}/${passengers}/0/0/${cabinClass}/EUR`;
+        const url = `${config.FLIGHT_API}/roundtrip/${config.FLIGHT_API_KEY}/${departureAirport}/${arrivalAirport}/${departureDate}/${returnDate}/${finalPassengers}/0/0/${finalCabinClass}/EUR`;
         console.log(`Fetching flights from URL: ${url}`);
         const response = await axios.get(url);
         const parsedFlights = parser.parseFlightData({
