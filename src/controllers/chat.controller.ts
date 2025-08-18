@@ -6,7 +6,6 @@ import { callModel } from '../ai/model';
 import { ChatResponse } from '../types/chat';
 import { LLM_FUNCTIONS, SYSTEM_PROMPT } from '../utils/constants';
 
-
 async function chat(req: Request, res: Response, next: NextFunction) {
     try {
         const { userMessage, conversationHistory = [] } = req.body;
@@ -35,7 +34,7 @@ async function chat(req: Request, res: Response, next: NextFunction) {
         }
         else if (toolCall?.function?.name === LLM_FUNCTIONS.SEARCH_HOTELS) {
             const args = JSON.parse(toolCall.function.arguments);
-            const hotels = await searchHotels(args.city, args.checkInDate, args.checkOutDate);
+            const hotels = await searchHotels(args);
 
             apiResponse = {
                 response: {
@@ -46,7 +45,7 @@ async function chat(req: Request, res: Response, next: NextFunction) {
         }
         else if (toolCall?.function?.name === LLM_FUNCTIONS.SEARCH_ATTRACTIONS) {
             const args = JSON.parse(toolCall.function.arguments);
-            const attractions = await searchAttractions(args.city);
+            const attractions = await searchAttractions(args);
 
             apiResponse = {
                 response: {

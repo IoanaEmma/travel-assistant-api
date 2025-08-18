@@ -3,7 +3,7 @@ import config from "../config"
 import parser from "../utils/parser";
 import { Attraction } from "../types/attractions";
 
-export async function searchAttractions(city: string): Promise<Attraction[]> {
+export async function searchAttractions({ city }: { city: string }): Promise<Attraction[]> {
     const geoCodeUrl = `${config.ATTRACTIONS_API}/v1/geocode/search?text=${city}&apiKey=${config.ATTRACTIONS_API_KEY}`;
 
     try {

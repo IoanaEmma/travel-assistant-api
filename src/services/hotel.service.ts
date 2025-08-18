@@ -4,7 +4,7 @@ import { LOCATION_KEYS } from "../utils/constants";
 import parser from "../utils/parser";
 import { HotelDetails, Hotel } from "../types/hotels";
 
-export async function searchHotels(city: string, checkInDate: string, checkOutDate: string): Promise<Hotel[]> {
+export async function searchHotels({ city, checkInDate, checkOutDate }: { city: string, checkInDate: string, checkOutDate: string }): Promise<Hotel[]> {
     const city_key = LOCATION_KEYS[city.toUpperCase()];
     const url = `${config.HOTELS_API}/list?location_key=${city_key}&limit=10`;
 
