@@ -2,7 +2,7 @@ import { FlightsApi } from "./flights";
 import { HotelsApi } from "./hotels";
 import { AttractionsApi } from "./attractions";
 
-type AppTab = "home" | "flights" | "trips" | "hotels" | "attractions" | "weather";
+type AppTab = "home" | "flights" | "trips" | "hotels" | "attractions";
 
 export type ChatResponse = {
     response: FlightsApi | HotelsApi | AttractionsApi | string;

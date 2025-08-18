@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
-import { Flight } from './Flight';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { FlightSegment } from './FlightSegment';
 
 @Entity()

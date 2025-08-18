@@ -79,11 +79,11 @@ async function getHotelsByCity(req: Request, res: Response, next: NextFunction) 
         if (city) {
             hotels = await hotelRepo.find({
                 where: { city: city as string },
-                relations: ["rates"] // Include hotel rates
+                relations: ["rates"] 
             });
         } else {
             hotels = await hotelRepo.find({
-                relations: ["rates"] // Include hotel rates
+                relations: ["rates"] 
             });
         }
 
@@ -97,7 +97,7 @@ async function getHotelsByCity(req: Request, res: Response, next: NextFunction) 
                 max: prices.length > 0 ? Math.max(...prices) : 0
             };
 
-            delete hotel.rates; // Remove rates from the hotel object to avoid circular reference
+            delete hotel.rates;
 
             return {
                 ...hotel,
