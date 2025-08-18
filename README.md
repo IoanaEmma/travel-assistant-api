@@ -4,19 +4,20 @@ A Node.js/TypeScript backend API for a travel planning application that helps us
 
 ## Features
 
-- **AI-Powered Chat**: Natural language processing for travel queries using Meta-Llama model
+- **AI-Powered Chat**: Natural language processing for travel queries using Meta-Llama model with conversation context
 - **Flight Search**: Search and book flights with detailed itineraries
 - **Hotel Search**: Find hotels with rates and booking options
 - **Attraction Discovery**: Explore local attractions and points of interest
 - **Trip Management**: Create, manage, and organize travel itineraries
 - **Database Storage**: Persistent storage for user trips and preferences
+- **Conversation History**: Contextual chat responses with conversation memory
 
 ## Tech Stack
 
 - **Runtime**: Node.js with TypeScript
 - **Framework**: Express.js
 - **Database**: PostgreSQL with TypeORM
-- **AI Integration**: Together AI (Meta-Llama-3.1-70B-Instruct-Turbo)
+- **AI Integration**: Llama3.1:8b-instruct-q4_K_M
 - **External APIs**: Flight/Hotel/Attraction booking services
 
 ## Installation
@@ -43,9 +44,9 @@ A Node.js/TypeScript backend API for a travel planning application that helps us
    DB_NAME=travel_assistant
 
    # EXTERNAL APIS
-   TOGETHER_API=https://together-ai-api-url
+   TOGETHER_API=https://api.together.xyz/v1/chat/completions
    HOTELS_API=https://hotels-api-url
-   FLIGHTS_API=https://flights-api-url
+   FLIGHT_API=https://flights-api-url
    ATTRACTIONS_API=https://attractions-api-url
 
    # API Keys
@@ -62,65 +63,73 @@ A Node.js/TypeScript backend API for a travel planning application that helps us
 
 The API will be available at `http://localhost:3000`
 
+## Project Structure
+```
+src/
+├── ai/           # AI model integration
+├── controllers/  # Request handlers
+├── entities/     # TypeORM entities
+├── routes/       # Express routes
+├── services/     # Business logic
+├── types/        # TypeScript type definitions
+├── utils/        # Utility functions
+└── dataSource.ts # Database configuration
+```
+
 ## API Endpoints
 
 ### Chat
-- `POST /chat` - Send natural language queries to the AI assistant.
+- `POST /chat` - Send natural language queries to the AI assistant with conversation context
 
 ### Flights
 - `POST /flight` - Save a flight to the database
+- `GET /flight` - Get all flights or filter by city (query param: `city`)
+- `DELETE /flight/:id` - Delete a flight
 
 ### Hotels
 - `POST /hotel` - Save a hotel to the database
+- `GET /hotel` - Get hotel details and rates (query params: `key`, `checkInDate`, `checkOutDate`)
+- `GET /hotel/search` - Get all hotels or filter by city (query param: `city`)
+- `GET /hotel/cities` - Get all cities where hotels are available
+- `DELETE /hotel/:id` - Delete a hotel
 
 ### Attractions
 - `POST /attraction` - Save an attraction to the database
+- `GET /attraction` - Get all attractions or filter by city (query param: `city`)
+- `GET /attraction/cities` - Get all cities where attractions are available
+- `DELETE /attraction/:id` - Delete an attraction
 
 ### Trips
 - `POST /trip` - Create a new trip
-- `GET /trip/:userId` - Get all trips for a user
+- `GET /trip/user/:userId` - Get all trips for a user
 - `GET /trip/:userId/:tripId` - Get detailed trip information
 - `PUT /trip/add-item/:tripId` - Add hotel/flight/attraction to a trip
+- `DELETE /trip/remove-item/:tripId` - Remove hotel/flight/attraction from a trip
 - `PUT /trip/:tripId/status` - Update trip status (active/completed/canceled)
+- `DELETE /trip/:id` - Delete a trip
 
 ## Request Examples
 
-### Chat with AI
+### Chat with AI (with conversation context)
 ```bash
 POST /chat
 Content-Type: application/json
-Description: This endpoint can return flights, hotels, attractions or normal model response 
 
 {
-  "userMessage": "Find me flights from Bucharest to Rome from May 22 to May 26 for 2 adults"
+  "userMessage": "Find me flights from Bucharest to Rome from May 22 to May 26 for 2 adults",
+  "conversationHistory": [
+    {"role": "user", "content": "Previous message"},
+    {"role": "assistant", "content": "Previous response"}
+  ]
 }
-```
 
-### Create Trip
-```bash
-POST /trip
-Content-Type: application/json
-
+Response:
 {
-  "userId": "user123",
-  "name": "Rome Vacation",
-  "when": "May 2025",
-  "status?": "active"
+  "response": { "flights": [...] } | "text response",
+  "tab": "flights" | "hotels" | "attractions" | "home",
+  "conversationHistory": [...]
 }
 ```
-
-### Add Item to Trip
-```bash
-PUT /trip/add-item/1
-Content-Type: application/json
-
-{
-  "type": "hotel",
-  "itemId": 123
-}
-```
-
-
 
 ## Database Schema
 
@@ -143,6 +152,24 @@ Content-Type: application/json
 - `FlightDetails` → `FlightSegment` (OneToMany)
 - `Hotel` → `HotelRate` (OneToMany)
 
+### Key Entity Properties
+
+#### Trip
+- `id`: Primary key
+- `userId`: String (GID) - User identifier
+- `name`: Trip name
+- `when`: Trip dates
+- `status`: "active" | "completed" | "canceled"
+
+#### Hotel
+- Includes `rates` relation with min/max price calculation
+- Supports past date adjustment for check-in/check-out
+
+#### Flight
+- `departureFlight`: FlightDetails for outbound journey
+- `returnFlight`: FlightDetails for return journey
+- Default values: `passengers = 1`, `cabinClass = "Economy"`
+
 ## AI Integration
 
 The API uses Together AI's Meta-Llama-3.1-70B-Instruct-Turbo model to:
@@ -150,46 +177,17 @@ The API uses Together AI's Meta-Llama-3.1-70B-Instruct-Turbo model to:
 1. **Classify User Intent**: Determine if a query requires function calling
 2. **Extract Parameters**: Parse natural language for search parameters
 3. **Provide Responses**: Give contextual travel advice and information
+4. **Maintain Context**: Remember conversation history for follow-up questions
 
 ### Supported Functions
 
-- `search_flights`: Extract flight search parameters from natural language
-- `search_hotels`: Parse hotel search requirements
-- `search_attractions`: Identify attraction search criteria
+- `searchFlights`: Extract flight search parameters from natural language
+- `searchHotels`: Parse hotel search requirements
+- `searchAttractions`: Identify attraction search criteria
 
-## Error Handling
+### Conversation Features
 
-The API includes comprehensive error handling:
-
-- **Validation Errors**: 400 Bad Request for invalid input
-- **Not Found**: 404 for missing resources
-- **Server Errors**: 500 for internal server errors
-- **Rate Limiting**: 429 for API rate limit exceeded
-
-## Development
-
-### Scripts
-```bash
-npm run dev     # Start development server
-npm run build   # Build TypeScript
-npm start       # Start production server
-```
-
-### Project Structure
-```
-src/
-├── ai/           # AI model integration
-├── controllers/  # Request handlers
-├── entities/     # TypeORM entities
-├── routes/       # Express routes
-├── services/     # Business logic
-├── types/        # TypeScript type definitions
-├── utils/        # Utility functions
-└── dataSource.ts # Database configuration
-```
-
-## Environment
-
-- **Node.js**: 18+ 
-- **TypeScript**: 5+
-- **Database**: PostgreSQL 13+
+- **Stateless Design**: Conversation history sent from client
+- **Context Awareness**: AI remembers previous messages
+- **Follow-up Support**: "What about hotels there?" after flight search
+- **Function Integration**: Seamless switching between tool calls and natural responses
