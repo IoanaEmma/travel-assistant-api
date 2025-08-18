@@ -4,6 +4,7 @@ import { Trip } from "../entities/Trip";
 import { Hotel } from "../entities/Hotel";
 import { Flight } from "../entities/Flight";
 import { Attraction } from "../entities/Attraction";
+import { TRIP_ITEM_TYPES } from "../utils/constants";
 
 async function createTrip(req: Request, res: Response, next: NextFunction) {
     try {
@@ -40,20 +41,20 @@ async function addItemToTrip(req: Request, res: Response, next: NextFunction) {
             return res.status(404).json({ message: "Trip not found" });
         }
 
-        if (type === "hotel") {
+        if (type === TRIP_ITEM_TYPES.HOTEL) {
             const hotelRepo = AppDataSource.getRepository(Hotel);
             const hotel = await hotelRepo.findOneBy({ id: itemId });
-            if (!hotel) return res.status(404).json({ message: "Hotel not found" });
+            if (!hotel) return res.status(404).json({ message: `${TRIP_ITEM_TYPES.HOTEL} not found` });
             trip.hotel = hotel;
-        } else if (type === "flight") {
+        } else if (type === TRIP_ITEM_TYPES.FLIGHT) {
             const flightRepo = AppDataSource.getRepository(Flight);
             const flight = await flightRepo.findOneBy({ id: itemId });
-            if (!flight) return res.status(404).json({ message: "Flight not found" });
+            if (!flight) return res.status(404).json({ message: `${TRIP_ITEM_TYPES.FLIGHT} not found` });
             trip.flight = flight;
-        } else if (type === "attraction") {
+        } else if (type === TRIP_ITEM_TYPES.ATTRACTION) {
             const attractionRepo = AppDataSource.getRepository(Attraction);
             const attraction = await attractionRepo.findOneBy({ id: itemId });
-            if (!attraction) return res.status(404).json({ message: "Attraction not found" });
+            if (!attraction) return res.status(404).json({ message: `${TRIP_ITEM_TYPES.ATTRACTION} not found` });
             trip.attractions = [...(trip.attractions || []), attraction];
         } else {
             return res.status(400).json({ message: "Invalid type" });
@@ -108,31 +109,37 @@ async function getTripDetails(req: Request, res: Response, next: NextFunction) {
 }
 
 async function updateTrip(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { tripId } = req.params;
+        const tripRepo = AppDataSource.getRepository(Trip);
 
-    const { tripId } = req.params;
-    console.log("Updating trip with ID:", tripId);
-    const tripRepo = AppDataSource.getRepository(Trip);
+        let trip = await tripRepo.findOneBy({ id: Number(tripId) });
+        if (!trip) return res.status(404).json({ message: "Trip not found" });
 
-    let trip = await tripRepo.findOneBy({ id: Number(tripId) });
-    if (!trip) return res.status(404).json({ message: "Trip not found" });
+        trip.name = req.body.name;
+        trip.status = req.body.status;
+        trip.when = req.body.when;
+        await tripRepo.save(trip);
 
-    trip.name = req.body.name;
-    trip.status = req.body.status;
-    trip.when = req.body.when;
-    await tripRepo.save(trip);
-
-    res.json(trip);
+        res.json(trip);
+    } catch (error) {
+        next(error);
+    }
 }
 
 async function deleteTrip(req: Request, res: Response, next: NextFunction) {
-    const { tripId } = req.params;
-    const tripRepo = AppDataSource.getRepository(Trip);
+    try {
+        const { tripId } = req.params;
+        const tripRepo = AppDataSource.getRepository(Trip);
 
-    const trip = await tripRepo.findOneBy({ id: Number(tripId) });
-    if (!trip) return res.status(404).json({ message: "Trip not found" });
+        const trip = await tripRepo.findOneBy({ id: Number(tripId) });
+        if (!trip) return res.status(404).json({ message: "Trip not found" });
 
-    await tripRepo.remove(trip);
-    res.status(204).send();
+        await tripRepo.remove(trip);
+        res.status(204).send();
+    } catch (error) {
+        next(error);
+    }
 }
 
 async function removeItemFromTrip(req: Request, res: Response, next: NextFunction) {
@@ -159,24 +166,24 @@ async function removeItemFromTrip(req: Request, res: Response, next: NextFunctio
             return res.status(404).json({ message: "Trip not found" });
         }
 
-        if (type === "hotel") {
+        if (type === TRIP_ITEM_TYPES.HOTEL) {
             if (trip.hotel && trip.hotel.id === itemId) {
                 trip.hotel = null;
             } else {
-                return res.status(404).json({ message: "Hotel not found in this trip" });
+                return res.status(404).json({ message: `${TRIP_ITEM_TYPES.HOTEL} not found in this trip` });
             }
-        } else if (type === "flight") {
+        } else if (type === TRIP_ITEM_TYPES.FLIGHT) {
             if (trip.flight && trip.flight.id === itemId) {
                 trip.flight = null;
             } else {
-                return res.status(404).json({ message: "Flight not found in this trip" });
+                return res.status(404).json({ message: `${TRIP_ITEM_TYPES.FLIGHT} not found in this trip` });
             }
-        } else if (type === "attraction") {
+        } else if (type === TRIP_ITEM_TYPES.ATTRACTION) {
             const attractionIndex = trip.attractions?.findIndex(attraction => attraction.id === itemId);
             if (attractionIndex !== undefined && attractionIndex >= 0) {
                 trip.attractions = trip.attractions.filter(attraction => attraction.id !== itemId);
             } else {
-                return res.status(404).json({ message: "Attraction not found in this trip" });
+                return res.status(404).json({ message: `${TRIP_ITEM_TYPES.ATTRACTION} not found in this trip` });
             }
         } else {
             return res.status(400).json({ message: "Invalid type" });
